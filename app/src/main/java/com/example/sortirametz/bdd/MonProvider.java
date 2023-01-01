@@ -3,6 +3,7 @@ package com.example.sortirametz.bdd;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -19,8 +20,11 @@ public class MonProvider extends android.content.ContentProvider{
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
-        return null;
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        SQLiteDatabase bd;
+        bd = this.helper.getReadableDatabase();
+        String nomTable = uri.getPath().substring(1);
+        return bd.query(nomTable, projection, selection, selectionArgs, null, null, null);
     }
 
     @Nullable
@@ -32,12 +36,19 @@ public class MonProvider extends android.content.ContentProvider{
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+        SQLiteDatabase bd;
+        bd = this.helper.getWritableDatabase();
+        String nomTable = uri.getPath().substring(1);
+        long result = bd.insert(nomTable, null, contentValues);
         return null;
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        SQLiteDatabase bd;
+        bd = this.helper.getWritableDatabase();
+        String nomTable = uri.getPath().substring(1);
+        return bd.delete(nomTable, selection, selectionArgs);
     }
 
     @Override

@@ -6,10 +6,20 @@ public class Site {
     private float latitude;
     private float longitude;
     private String adresse;
-    private int categorie;
+    private String categorie;
     private String resume;
 
-    public Site(String name, float latitude, float longitude, String adresse, int categorie, String resume) {
+    public Site(String name, float latitude, float longitude, String adresse, String categorie, String resume) {
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.adresse = adresse;
+        this.categorie = categorie;
+        this.resume = resume;
+    }
+
+    public Site(int id, String name, float latitude, float longitude, String adresse, String categorie, String resume) {
+        this.id = id;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -38,7 +48,7 @@ public class Site {
         return adresse;
     }
 
-    public int getCategorie() {
+    public String getCategorie() {
         return categorie;
     }
 

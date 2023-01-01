@@ -12,7 +12,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String name = "bdd_app";
     private static final int version = 1;
 
-    public static final String table_name = "my_library";
+    public static final String table_name_sites = "sites";
+    public static final String table_name_categories = "categories";
+
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, name, null, version);
@@ -21,13 +23,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("CREATE TABLE livre (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, author TEXT NOT NULL, pages TEXT NOT NULL)");
-        sqLiteDatabase.execSQL("INSERT INTO livre(title,author,pages) VALUES ('TitreTest','AuteurTest', 'PagesTest')");
+        sqLiteDatabase.execSQL("CREATE TABLE sites (id INTEGER PRIMARY KEY AUTOINCREMENT, site_name TEXT NOT NULL, latitude TEXT NOT NULL, longitude TEXT NOT NULL, " +
+                               "adresse_postale TEXT NOT NULL, site_category_name TEXT NOT NULL, resume TEXT NOT NULL)");
+        sqLiteDatabase.execSQL("CREATE TABLE categories (id INTEGER PRIMARY KEY AUTOINCREMENT, category_name TEXT NOT NULL)");
+
+        sqLiteDatabase.execSQL("INSERT INTO sites(site_name,latitude,longitude,adresse_postale,site_category_name,resume) VALUES ('Site Test','0', '0','TestAdresse','Categorie Restaurant','ResumeTest')");
+        sqLiteDatabase.execSQL("INSERT INTO categories(category_name) VALUES ('Restaurant')");
+        sqLiteDatabase.execSQL("INSERT INTO categories(category_name) VALUES ('Test')");
+        sqLiteDatabase.execSQL("INSERT INTO categories(category_name) VALUES ('Test2')");
+
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + table_name);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + table_name_sites);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + table_name_categories);
         onCreate(sqLiteDatabase);
     }
 }

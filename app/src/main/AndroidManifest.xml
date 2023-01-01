@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SortirAMetz"
         tools:targetApi="31">
+        <provider
+            android:name=".bdd.MonProvider"
+            android:authorities="com.example.sortirametz.bdd"
+            android:enabled="true"
+            android:exported="true" />
 
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
@@ -36,6 +42,54 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.SitesActivity"
+            android:exported="true"
+            android:parentActivityName=".activities.MapsActivity">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activities.AddSitesActivity"
+            android:exported="true"
+            android:parentActivityName=".activities.SitesActivity">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activities.UpdateSitesActivity"
+            android:parentActivityName=".activities.SitesActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activities.CategoriesActivity"
+            android:exported="true"
+            android:parentActivityName=".activities.MapsActivity">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activities.AddCategoriesActivity"
+            android:exported="true"
+            android:parentActivityName=".activities.CategoriesActivity">
+        <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activities.UpdateCategoriesActivity"
+            android:parentActivityName=".activities.CategoriesActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
         </activity>
     </application>
 

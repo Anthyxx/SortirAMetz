@@ -19,7 +19,7 @@ public final class ContractClass {
         static
         {
             builder = ContractClass.CONTENT_URI.buildUpon();
-            builder.path("site");
+            builder.path("sites");
         }
 
         public static final Uri CONTENT_URI = builder.build();
@@ -32,7 +32,7 @@ public final class ContractClass {
         /**
          * colonne nom : TEXT
          * */
-        public static final String name = "name";
+        public static final String site_name = "site_name";
 
         /**
          * colonne latitude : TEXT
@@ -47,12 +47,12 @@ public final class ContractClass {
         /**
          * colonne adresse : TEXT
          * */
-        public static final String adresse = "adresse";
+        public static final String adresse_postale = "adresse_postale";
 
         /**
          * colonne categorie : INTEGER
          * */
-        public static final String categorie = "categorie";
+        public static final String site_category_name = "site_category_name";
 
         /**
          * colonne resumé : TEXT
@@ -66,7 +66,7 @@ public final class ContractClass {
         static
         {
             builder = ContractClass.CONTENT_URI.buildUpon();
-            builder.path("categorie");
+            builder.path("categories");
         }
 
         public static final Uri CONTENT_URI = builder.build();
@@ -79,6 +79,6 @@ public final class ContractClass {
         /**
          * colonne nom : TEXT
          * */
-        public static final String name = "name";
+        public static final String category_name = "category_name";
     }
 }

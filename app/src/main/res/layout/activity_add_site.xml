@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/txt_add_name_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Site's name"
+        app:layout_constraintBottom_toTopOf="@+id/edit_add_name_site"
+        app:layout_constraintStart_toStartOf="@+id/edit_add_name_site" />
+
+    <EditText
+        android:id="@+id/edit_add_name_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="75dp"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_add_latitude_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Latitude"
+        app:layout_constraintBottom_toTopOf="@+id/edit_add_latitude_site"
+        app:layout_constraintStart_toStartOf="@+id/edit_add_latitude_site" />
+
+    <EditText
+        android:id="@+id/edit_add_latitude_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:hint="Latitude"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_add_name_site" />
+
+    <TextView
+        android:id="@+id/txt_add_longitude_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Longitude"
+        app:layout_constraintBottom_toTopOf="@+id/edit_add_longitude_site"
+        app:layout_constraintStart_toStartOf="@+id/edit_add_longitude_site" />
+
+    <EditText
+        android:id="@+id/edit_add_longitude_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:hint="Longitude"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_add_latitude_site" />
+
+    <TextView
+        android:id="@+id/txt_add_adresse_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Postal Address"
+        app:layout_constraintBottom_toTopOf="@+id/edit_add_address_site"
+        app:layout_constraintStart_toStartOf="@+id/edit_add_address_site" />
+
+    <EditText
+        android:id="@+id/edit_add_address_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:hint="Address"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_add_longitude_site" />
+
+    <TextView
+        android:id="@+id/txt_add_category_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Category"
+        app:layout_constraintBottom_toTopOf="@+id/edit_add_category_site"
+        app:layout_constraintStart_toStartOf="@+id/edit_add_category_site" />
+
+    <EditText
+        android:id="@+id/edit_add_category_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:hint="Category"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_add_address_site" />
+
+    <TextView
+        android:id="@+id/txt_add_resume_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resume"
+        app:layout_constraintBottom_toTopOf="@+id/edit_add_resume_site"
+        app:layout_constraintStart_toStartOf="@+id/edit_add_resume_site" />
+
+    <EditText
+        android:id="@+id/edit_add_resume_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:hint="Resume"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_add_category_site" />
+
+    <Button
+        android:id="@+id/btn_confirmation_add_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="Add"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_add_resume_site" />
+</androidx.constraintlayout.widget.ConstraintLayout>
