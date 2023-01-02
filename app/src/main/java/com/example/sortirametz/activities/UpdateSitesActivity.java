@@ -4,24 +4,34 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sortirametz.R;
+import com.example.sortirametz.dao.DAOCategorie;
 import com.example.sortirametz.dao.DAOSite;
+import com.example.sortirametz.modeles.Categorie;
 import com.example.sortirametz.modeles.Site;
 
+import java.util.ArrayList;
+
 public class UpdateSitesActivity extends AppCompatActivity {
-    EditText var_edit_update_name_site, var_edit_update_latitude_site, var_edit_update_longitude_site, var_edit_update_address_site, var_edit_update_category_site, var_edit_update_resume_site;
+    EditText var_edit_update_name_site, var_edit_update_latitude_site, var_edit_update_longitude_site, var_edit_update_address_site, var_edit_update_resume_site;
     Button var_btn_confirmation_update_site, var_btn_confirmation_delete_site;
+    Spinner var_spinner_update_category_site;
 
     String site_id, site_name, site_latitude, site_longitude, site_address, site_category, site_resume;
 
     DAOSite daoSite = new DAOSite();
+    DAOCategorie daoCategorie = new DAOCategorie();
+
+    ArrayList<Categorie> listCategories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +42,19 @@ public class UpdateSitesActivity extends AppCompatActivity {
         var_edit_update_latitude_site = findViewById(R.id.edit_update_latitude_site);
         var_edit_update_longitude_site = findViewById(R.id.edit_update_longitude_site);
         var_edit_update_address_site = findViewById(R.id.edit_update_address_site);
-        var_edit_update_category_site = findViewById(R.id.edit_update_category_site);
+        var_spinner_update_category_site = findViewById(R.id.spinner_update_category_site);
         var_edit_update_resume_site = findViewById(R.id.edit_update_resume_site);
 
         var_btn_confirmation_update_site = findViewById(R.id.btn_confirmation_update_site);
         var_btn_confirmation_delete_site = findViewById(R.id.btn_confirmation_delete_site);
+
+        listCategories = daoCategorie.getAllCategories(this);
+        ArrayList<String> listOptions = new ArrayList<String>();
+        for (int i = 0; i < listCategories.size(); i++) {
+            listOptions.add(listCategories.get(i).getName());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_list, listOptions);
+        var_spinner_update_category_site.setAdapter(adapter); // this will set list of values to spinner
 
         getIntentData();
 
@@ -44,7 +62,7 @@ public class UpdateSitesActivity extends AppCompatActivity {
         if(ab != null){
             ab.setTitle(site_name);
         }
-/*
+        /*
         update_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -80,7 +98,8 @@ public class UpdateSitesActivity extends AppCompatActivity {
             var_edit_update_latitude_site.setText(site_latitude);
             var_edit_update_longitude_site.setText(site_longitude);
             var_edit_update_address_site.setText(site_address);
-            var_edit_update_category_site.setText(site_category);
+            var_spinner_update_category_site.setSelection(daoCategorie.getCategoryByString(listCategories, site_category).getId());
+            System.out.println("Catégorie = "+daoCategorie.getCategoryByString(listCategories, site_category).getName());
             var_edit_update_resume_site.setText(site_resume);
         }
         else{

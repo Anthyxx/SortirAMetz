@@ -28,6 +28,19 @@ public class DAOCategorie {
         return listCategories;
     }
 
+    public Categorie getCategoryByString(ArrayList<Categorie> list, String category_name){
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println("getname = "+list.get(i).getName());
+            System.out.println("chaine = "+category_name);
+            if(list.get(i).getName() == category_name){
+                System.out.println("IF");
+                return list.get(i);
+            }
+        }
+        System.out.println("NULL");
+        return new Categorie();
+    }
+
     public void addCategory(Activity activity, Categorie categorie){
         ContentResolver contentResolver = activity.getContentResolver();
         ContentValues cv = new ContentValues();

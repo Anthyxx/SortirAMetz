@@ -13,7 +13,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOCategorie;
+import com.example.sortirametz.dao.DAOSite;
 import com.example.sortirametz.modeles.Categorie;
+import com.example.sortirametz.modeles.Site;
+
+import java.util.ArrayList;
 
 public class UpdateCategoriesActivity extends AppCompatActivity {
     EditText var_edit_update_name_category;
@@ -21,6 +25,7 @@ public class UpdateCategoriesActivity extends AppCompatActivity {
 
     String category_id, category_name;
 
+    DAOSite daoSite = new DAOSite();
     DAOCategorie daoCategorie = new DAOCategorie();
 
 
@@ -75,10 +80,22 @@ public class UpdateCategoriesActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Delete "+ category_name + " ?");
         builder.setMessage("Are you sure you want to delete "+ category_name + " ?");
+        ArrayList<Site> listSites = daoSite.getAllSites(this);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                for (int j = 0; j < listSites.size(); j++) {
+                    System.out.println("entre dans le for");
+                    System.out.println(listSites.get(j).getCategorie());
+                    System.out.println(category_name);
+                    if(listSites.get(j).getCategorie() == category_name){
+                        System.out.println("entre dans le if");
+                        listSites.get(j).setCategorie(null);
+                    }
+                }
                 daoCategorie.deleteCategory(UpdateCategoriesActivity.this, category_id);
+                System.out.println("suppression effectuée");
+
                 finish();
             }
         });

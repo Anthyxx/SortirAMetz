@@ -55,4 +55,8 @@ public class Site {
     public String getResume() {
         return resume;
     }
+
+    public void setCategorie(String categorie) {
+        this.categorie = categorie;
+    }
 }

@@ -45,7 +45,12 @@ public class CustomAdaptaterSites extends RecyclerView.Adapter<CustomAdaptaterSi
         holder.var_site_latitude_txt.setText(String.valueOf(listSites.get(position).getLatitude()));
         holder.var_site_longitude_txt.setText(String.valueOf(listSites.get(position).getLongitude()));
         holder.var_site_adresse_txt.setText(String.valueOf(listSites.get(position).getAdresse()));
-        //holder.var_site_categorie_txt.setText(String.valueOf(listSites.get(position).getCategorie()));
+        if(listSites.get(position).getCategorie() == null){
+            holder.var_site_categorie_txt.setText("No Category");
+        }
+        else{
+            holder.var_site_categorie_txt.setText(String.valueOf(listSites.get(position).getCategorie()));
+        }
         holder.var_site_resume_txt.setText(String.valueOf(listSites.get(position).getResume()));
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +84,7 @@ public class CustomAdaptaterSites extends RecyclerView.Adapter<CustomAdaptaterSi
             var_site_latitude_txt = itemView.findViewById(R.id.site_latitude_txt);
             var_site_longitude_txt = itemView.findViewById(R.id.site_longitude_txt);
             var_site_adresse_txt = itemView.findViewById(R.id.site_adresse_txt);
-            //var_site_categorie_txt = itemView.findViewById(R.id.site_categorie_txt);
+            var_site_categorie_txt = itemView.findViewById(R.id.site_category_txt);
             var_site_resume_txt = itemView.findViewById(R.id.site_resume_txt);
             layout = itemView.findViewById(R.id.site_layout);
         }

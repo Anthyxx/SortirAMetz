@@ -7,24 +7,23 @@
 
     <TextView
         android:id="@+id/txt_update_name_category"
-        android:layout_width="64dp"
-        android:layout_height="15dp"
-        android:layout_marginTop="250dp"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="@+id/edit_update_name_category"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Category's name"
+        app:layout_constraintBottom_toTopOf="@+id/edit_update_name_category"
+        app:layout_constraintStart_toStartOf="@+id/edit_update_name_category" />
 
     <EditText
         android:id="@+id/edit_update_name_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="250dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_update_name_category" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_confirmation_update_category"

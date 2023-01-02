@@ -91,16 +91,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Category"
-        app:layout_constraintBottom_toTopOf="@+id/edit_update_category_site"
-        app:layout_constraintStart_toStartOf="@+id/edit_update_category_site" />
+        app:layout_constraintBottom_toTopOf="@+id/spinner_update_category_site"
+        app:layout_constraintStart_toStartOf="@+id/spinner_update_category_site" />
 
-    <EditText
-        android:id="@+id/edit_update_category_site"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <Spinner
+        android:id="@+id/spinner_update_category_site"
+        android:layout_width="210sp"
+        android:layout_height="40sp"
         android:layout_marginTop="40dp"
-        android:ems="10"
-        android:inputType="textPersonName"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -124,7 +123,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_update_category_site" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner_update_category_site" />
 
     <Button
         android:id="@+id/btn_confirmation_update_site"

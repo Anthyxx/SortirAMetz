@@ -3,10 +3,13 @@ package com.example.sortirametz.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -42,11 +45,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+    private static final int ACCESS_LOCATION_REQUEST_CODE = 10001;
+
+    double distance_parametered;
+
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private static final int Request_code = 101;
-    private double latitude, longitude;
+    Task<Location> locationTask;
 
     public DAOSite daoSite = new DAOSite();
+    //ArrayList<Site> listSites = daoSite.getAllSites(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +62,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getApplicationContext());
+        //fusedLocationProviderClient_old = LocationServices.getFusedLocationProviderClient(this.getApplicationContext());
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if(getIntent().hasExtra("map_category") && getIntent().hasExtra("map_radius")){
+            distance_parametered = Double. parseDouble(getIntent().getStringExtra("map_radius"));
+        }
+        else{
+            distance_parametered = 500;
+        }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -81,99 +96,94 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         */
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            enableUserLocation();
+            zoomToUserLocation();
+        }
+        else{
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_LOCATION_REQUEST_CODE);
+            }
+            else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_LOCATION_REQUEST_CODE);
+            }
+        }
+
         putAllMarker();
-        getCurrentLocation();
         CircleOptions circleOpt = new CircleOptions();
-        circleOpt.radius(30);
+        circleOpt.radius(100000);
         circleOpt.strokeColor(Color.GRAY);
         circleOpt.fillColor(Color.GRAY);
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-
-                Toast.makeText(
-                        MapsActivity.this,
-                        "SHORT CLICK Lat : " + latLng.latitude + " , "
-                                + "Long : " + latLng.longitude,
-                        Toast.LENGTH_LONG).show();
                 circleOpt.center(latLng);
                 mMap.addCircle(circleOpt);
-
+                Toast.makeText(MapsActivity.this, Double.toString(distance_parametered), Toast.LENGTH_SHORT).show();
             }
         });
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(@NonNull LatLng latLng) {
-                Toast.makeText(
-                        MapsActivity.this,
-                        "LONG CLICK Lat : " + latLng.latitude + " , "
-                                + "Long : " + latLng.longitude,
-                        Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MapsActivity.this, AddSitesActivity.class);
+                intent.putExtra("click_latitude", String.valueOf(latLng.latitude));
+                intent.putExtra("click_longitude", String.valueOf(latLng.longitude));
+                startActivityForResult(intent, 3);
             }
         });
 
     }
 
-    public void getCurrentLocation(){
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_code);
-            return;
-        }
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(60000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setFastestInterval(5000);
-        LocationCallback locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                Toast.makeText(getApplicationContext(), "location result is = " + locationResult, Toast.LENGTH_LONG).show();
-                if(locationResult == null){
-                    Toast.makeText(getApplicationContext(), "Current location is null", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                for(Location location:locationResult.getLocations()){
-                    if(location != null){
-                        Toast.makeText(getApplicationContext(), "Current location is "+location.getLongitude(), Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        };
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-        Task<Location> task = fusedLocationProviderClient.getLastLocation();
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+    @SuppressLint("MissingPermission")
+    public void enableUserLocation(){
+        mMap.setMyLocationEnabled(true);
+    }
+
+
+    private void zoomToUserLocation(){
+        locationTask = fusedLocationProviderClient.getLastLocation();
+        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                if(location != null){
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-
-                    LatLng latLng = new LatLng(latitude, longitude);
-                    mMap.addMarker(new MarkerOptions().position(latLng).title("current location"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                }
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
             }
         });
     }
 
-    @SuppressLint("MissingSuperCall")
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (Request_code){
-            case Request_code:
-                    if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                        getCurrentLocation();
-                    }
+        if(requestCode == ACCESS_LOCATION_REQUEST_CODE){
+            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                enableUserLocation();
+                zoomToUserLocation();
+            }
+            else{
+
+            }
+        }
+    }
+
+    public void putMarkerInDistance(double distance){
+        ArrayList<Site> listSites = daoSite.getAllSites(this);
+
+        for (int i = 0; i < listSites.size(); i++) {
+            if(distance_parametered>=distance) {
+                LatLng site_positions = new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude());
+                mMap.addMarker(new MarkerOptions().position(site_positions).title(listSites.get(i).getName() + " - " + listSites.get(i).getResume() + " - " + distance));
+            }
         }
     }
 
     public void putAllMarker(){
         ArrayList<Site> listSites = daoSite.getAllSites(this);
+
         for (int i = 0; i < listSites.size(); i++) {
             LatLng site_positions = new LatLng(listSites.get(i).getLatitude(),listSites.get(i).getLongitude());
 
-            mMap.addMarker(new MarkerOptions().position(site_positions).title(listSites.get(i).getName()));
+            mMap.addMarker(new MarkerOptions().position(site_positions).title(listSites.get(i).getName()+" - "+listSites.get(i).getResume()));
         }
     }
 
@@ -189,8 +199,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
+            case R.id.button_menu_parameters:
+                Intent intent_parameters = new Intent(MapsActivity.this, MapsParametersActivity.class);
+                startActivity(intent_parameters);
+                break;
             case R.id.button_menu_sites:
                 Intent intent_sites = new Intent(MapsActivity.this, SitesActivity.class);
+                intent_sites.putExtra("current_position", String.valueOf(locationTask));
                 startActivity(intent_sites);
                 break;
             case R.id.button_menu_categories:

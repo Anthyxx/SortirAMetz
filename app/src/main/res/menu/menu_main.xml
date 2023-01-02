@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/button_menu_parameters"
+        app:showAsAction="always"
+        android:title="Parameters">
+    </item>
+
+    <item
         android:id="@+id/button_menu_sites"
         app:showAsAction="always"
         android:title="Sites">
@@ -12,7 +18,7 @@
     <item
         android:id="@+id/button_menu_categories"
         app:showAsAction="always"
-        android:title="Catégories">
+        android:title="Categories">
     </item>
 
 </menu>

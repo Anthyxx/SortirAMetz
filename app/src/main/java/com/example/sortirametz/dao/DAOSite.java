@@ -27,7 +27,7 @@ public class DAOSite {
                 float column3_latitude = parseFloat(c.getString(2));
                 float column4_longitude = parseFloat(c.getString(3));
                 String column5_adresse = c.getString(4);
-                String column6_categorie = c.getString(4);
+                String column6_categorie = c.getString(5);
                 String column7_resume = c.getString(6);
 
                 listSites.add(new Site(column1_id,column2_name,column3_latitude,column4_longitude,column5_adresse,column6_categorie,column7_resume));

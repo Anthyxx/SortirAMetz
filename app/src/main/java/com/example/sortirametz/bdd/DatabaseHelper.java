@@ -24,13 +24,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE sites (id INTEGER PRIMARY KEY AUTOINCREMENT, site_name TEXT NOT NULL, latitude TEXT NOT NULL, longitude TEXT NOT NULL, " +
-                               "adresse_postale TEXT NOT NULL, site_category_name TEXT NOT NULL, resume TEXT NOT NULL)");
+                               "adresse_postale TEXT NOT NULL, site_category_name TEXT, resume TEXT NOT NULL)");
         sqLiteDatabase.execSQL("CREATE TABLE categories (id INTEGER PRIMARY KEY AUTOINCREMENT, category_name TEXT NOT NULL)");
 
-        sqLiteDatabase.execSQL("INSERT INTO sites(site_name,latitude,longitude,adresse_postale,site_category_name,resume) VALUES ('Site Test','0', '0','TestAdresse','Categorie Restaurant','ResumeTest')");
+        sqLiteDatabase.execSQL("INSERT INTO sites(site_name,latitude,longitude,adresse_postale,site_category_name,resume) VALUES ('Site Test','0', '0','TestAdresse','Musée','ResumeTest')");
         sqLiteDatabase.execSQL("INSERT INTO categories(category_name) VALUES ('Restaurant')");
-        sqLiteDatabase.execSQL("INSERT INTO categories(category_name) VALUES ('Test')");
-        sqLiteDatabase.execSQL("INSERT INTO categories(category_name) VALUES ('Test2')");
+        sqLiteDatabase.execSQL("INSERT INTO categories(category_name) VALUES ('Musée')");
+        sqLiteDatabase.execSQL("INSERT INTO categories(category_name) VALUES ('Monument')");
 
 
     }
