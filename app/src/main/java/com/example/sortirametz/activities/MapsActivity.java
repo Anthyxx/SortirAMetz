@@ -1,6 +1,7 @@
 package com.example.sortirametz.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -47,7 +48,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityMapsBinding binding;
     private static final int ACCESS_LOCATION_REQUEST_CODE = 10001;
 
-    double distance_parametered;
+    double distance_radius = 500;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     Task<Location> locationTask;
@@ -64,13 +65,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //fusedLocationProviderClient_old = LocationServices.getFusedLocationProviderClient(this.getApplicationContext());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        if(getIntent().hasExtra("map_category") && getIntent().hasExtra("map_radius")){
-            distance_parametered = Double. parseDouble(getIntent().getStringExtra("map_radius"));
-        }
-        else{
-            distance_parametered = 500;
-        }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -110,7 +104,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-        putAllMarker();
+        putMarkerInDistance();
         CircleOptions circleOpt = new CircleOptions();
         circleOpt.radius(100000);
         circleOpt.strokeColor(Color.GRAY);
@@ -120,7 +114,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onMapClick(LatLng latLng) {
                 circleOpt.center(latLng);
                 mMap.addCircle(circleOpt);
-                Toast.makeText(MapsActivity.this, Double.toString(distance_parametered), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapsActivity.this, Double.toString(distance_radius), Toast.LENGTH_SHORT).show();
             }
         });
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
@@ -129,7 +123,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Intent intent = new Intent(MapsActivity.this, AddSitesActivity.class);
                 intent.putExtra("click_latitude", String.valueOf(latLng.latitude));
                 intent.putExtra("click_longitude", String.valueOf(latLng.longitude));
-                startActivityForResult(intent, 3);
+                startActivity(intent);
             }
         });
 
@@ -146,8 +140,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+                //latLngLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLastLocation, 18));
             }
         });
     }
@@ -166,20 +160,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void putMarkerInDistance(double distance){
+    public void putMarkerInDistance(){
         ArrayList<Site> listSites = daoSite.getAllSites(this);
-
-        for (int i = 0; i < listSites.size(); i++) {
-            if(distance_parametered>=distance) {
-                LatLng site_positions = new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude());
-                mMap.addMarker(new MarkerOptions().position(site_positions).title(listSites.get(i).getName() + " - " + listSites.get(i).getResume() + " - " + distance));
+        locationTask = fusedLocationProviderClient.getLastLocation();
+        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                LatLng latLngLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                for (int i = 0; i < listSites.size(); i++) {
+                    float[] distance = new float[1];
+                    Location.distanceBetween(listSites.get(i).getLatitude(), listSites.get(i).getLongitude(), location.getLatitude(), location.getLongitude(), distance);
+                    System.out.println(distance[0]);
+                    if(distance_radius>=distance[0]) {
+                        LatLng site_positions = new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(site_positions).title(listSites.get(i).getName() + " - " + listSites.get(i).getResume() + " - " + distance[0]));
+                    }
+                }
             }
-        }
+        });
+
     }
 
     public void putAllMarker(){
         ArrayList<Site> listSites = daoSite.getAllSites(this);
-
         for (int i = 0; i < listSites.size(); i++) {
             LatLng site_positions = new LatLng(listSites.get(i).getLatitude(),listSites.get(i).getLongitude());
 
@@ -197,11 +200,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 3){
+            distance_radius = Double.parseDouble(data.getStringExtra("map_radius"));
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.button_menu_parameters:
                 Intent intent_parameters = new Intent(MapsActivity.this, MapsParametersActivity.class);
-                startActivity(intent_parameters);
+                intent_parameters.putExtra("radius", Double.toString(distance_radius));
+                startActivityForResult(intent_parameters, 3);
                 break;
             case R.id.button_menu_sites:
                 Intent intent_sites = new Intent(MapsActivity.this, SitesActivity.class);

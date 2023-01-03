@@ -38,6 +38,10 @@ public class MapsParametersActivity extends AppCompatActivity {
         var_edit_maps_parameters_radius = findViewById(R.id.edit_maps_parameters_radius);
         var_btn_confirmation_update_parameters = findViewById(R.id.btn_confirmation_update_parameters);
 
+        var_edit_maps_parameters_radius.setText(getIntent().getStringExtra("radius"));
+
+
+
         ArrayList<Categorie> listCategories = daoCategorie.getAllCategories(this);
         ArrayList<String> listOptions = new ArrayList<String>();
         for (int i = 0; i < listCategories.size(); i++) {
@@ -50,9 +54,10 @@ public class MapsParametersActivity extends AppCompatActivity {
         var_btn_confirmation_update_parameters.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(MapsParametersActivity.this, MapsActivity.class);
-                intent.putExtra("map_category", var_edit_maps_parameters_radius.getText());
-                intent.putExtra("map_radius", var_edit_maps_parameters_radius.getText());
-                startActivity(intent);
+                intent.putExtra("map_category", var_edit_maps_parameters_radius.getText().toString().trim());
+                intent.putExtra("map_radius", var_edit_maps_parameters_radius.getText().toString().trim());
+                setResult(3, intent);
+                finish();
             }
         });
     }

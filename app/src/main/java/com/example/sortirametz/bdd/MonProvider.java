@@ -1,5 +1,6 @@
 package com.example.sortirametz.bdd;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,7 +17,8 @@ public class MonProvider extends android.content.ContentProvider{
     @Override
     public boolean onCreate() {
         this.helper = new DatabaseHelper(this.getContext());
-        return true;    }
+        return true;
+    }
 
     @Nullable
     @Override
@@ -40,7 +42,10 @@ public class MonProvider extends android.content.ContentProvider{
         bd = this.helper.getWritableDatabase();
         String nomTable = uri.getPath().substring(1);
         long result = bd.insert(nomTable, null, contentValues);
-        return null;
+        if(result != 0)
+            return ContentUris.withAppendedId(uri,result);
+
+        throw new IllegalArgumentException("Failed to insert into " + uri);
     }
 
     @Override
