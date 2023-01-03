@@ -15,6 +15,7 @@ import com.example.sortirametz.bdd.DatabaseHelper;
 import com.example.sortirametz.customadaptater.CustomAdaptaterCategories;
 import com.example.sortirametz.customadaptater.CustomAdaptaterSites;
 import com.example.sortirametz.dao.DAOSite;
+import com.example.sortirametz.ecouteurs.EcouteurNavigationAjoutSite;
 import com.example.sortirametz.modeles.Categorie;
 import com.example.sortirametz.modeles.Site;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,6 +29,8 @@ public class SitesActivity extends AppCompatActivity {
     ContentResolver contentResolver;
     FloatingActionButton var_btn_add_site;
 
+    EcouteurNavigationAjoutSite ecouteurNavigationAjoutSite;
+
     DAOSite dao_site = new DAOSite();
 
     @Override
@@ -39,13 +42,8 @@ public class SitesActivity extends AppCompatActivity {
 
         this.contentResolver = this.getContentResolver();
 
-        var_btn_add_site.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SitesActivity.this, AddSitesActivity.class);
-                startActivity(intent);
-            }
-        });
+        ecouteurNavigationAjoutSite = new EcouteurNavigationAjoutSite(this);
+        var_btn_add_site.setOnClickListener(ecouteurNavigationAjoutSite);
 
         db = new DatabaseHelper(SitesActivity.this);
 

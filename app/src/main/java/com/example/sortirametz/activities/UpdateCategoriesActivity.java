@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOCategorie;
 import com.example.sortirametz.dao.DAOSite;
+import com.example.sortirametz.ecouteurs.EcouteurConfirmationSuppressionCategorie;
+import com.example.sortirametz.ecouteurs.EcouteurConfirmationSuppressionSite;
 import com.example.sortirametz.modeles.Categorie;
 import com.example.sortirametz.modeles.Site;
 
@@ -24,6 +26,8 @@ public class UpdateCategoriesActivity extends AppCompatActivity {
     Button var_btn_confirmation_update_category, var_btn_confirmation_delete_category;
 
     String category_id, category_name;
+
+    EcouteurConfirmationSuppressionCategorie ecouteurConfirmationSuppressionCategorie;
 
     DAOSite daoSite = new DAOSite();
     DAOCategorie daoCategorie = new DAOCategorie();
@@ -57,12 +61,8 @@ public class UpdateCategoriesActivity extends AppCompatActivity {
             }
         });*/
 
-        var_btn_confirmation_delete_category.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                confirmDialog();
-            }
-        });
+        ecouteurConfirmationSuppressionCategorie = new EcouteurConfirmationSuppressionCategorie(this);
+        var_btn_confirmation_delete_category.setOnClickListener(ecouteurConfirmationSuppressionCategorie);
     }
 
     void getIntentData(){
@@ -76,7 +76,7 @@ public class UpdateCategoriesActivity extends AppCompatActivity {
         }
     }
 
-    void confirmDialog(){
+    public void confirmDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Delete "+ category_name + " ?");
         builder.setMessage("Are you sure you want to delete "+ category_name + " ?");

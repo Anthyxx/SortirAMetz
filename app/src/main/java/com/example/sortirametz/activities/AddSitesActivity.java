@@ -12,21 +12,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOCategorie;
 import com.example.sortirametz.dao.DAOSite;
+import com.example.sortirametz.ecouteurs.EcouteurConfirmationAjoutSite;
 import com.example.sortirametz.modeles.Categorie;
 import com.example.sortirametz.modeles.Site;
 
 import java.util.ArrayList;
 
 public class AddSitesActivity extends AppCompatActivity {
-    EditText var_edit_add_name_site, var_edit_add_latitude_site, var_edit_add_longitude_site, var_edit_add_address_site, var_edit_add_resume_site;
-    Spinner var_spinner_add_category_site;
-    Button var_btn_confirmation_add_site;
+    public EditText var_edit_add_name_site;
+    public EditText var_edit_add_latitude_site;
+    public EditText var_edit_add_longitude_site;
+    public EditText var_edit_add_address_site;
+    public EditText var_edit_add_resume_site;
+    public Spinner var_spinner_add_category_site;
+    public Button var_btn_confirmation_add_site;
 
-    DAOSite daoSite = new DAOSite();
+    EcouteurConfirmationAjoutSite ecouteurConfirmationAjoutSite;
+
     DAOCategorie daoCategorie = new DAOCategorie();
 
-    float var_float_latitude;
-    float var_float_longitude;
+
 
     String site_latitude, site_longitude;
 
@@ -58,37 +63,15 @@ public class AddSitesActivity extends AppCompatActivity {
             var_edit_add_latitude_site.setText(site_latitude);
             var_edit_add_longitude_site.setText(site_longitude);
         }
+        else if(getIntent().hasExtra("latitudeAct") && getIntent().hasExtra("longitudeAct")){
+            site_latitude = getIntent().getStringExtra("latitudeAct");
+            site_longitude = getIntent().getStringExtra("longitudeAct");
+            var_edit_add_latitude_site.setText(site_latitude);
+            var_edit_add_longitude_site.setText(site_longitude);
+        }
 
-        var_btn_confirmation_add_site.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                var_float_latitude = Float.valueOf(var_edit_add_latitude_site.getText().toString().trim());
-                var_float_longitude = Float.valueOf(var_edit_add_longitude_site.getText().toString().trim());
-                if(var_spinner_add_category_site.getSelectedItem().toString() == "None") {
-                    daoSite.addSite(AddSitesActivity.this,
-                            new Site(
-                                    var_edit_add_name_site.getText().toString().trim(),
-                                    var_float_latitude,
-                                    var_float_longitude,
-                                    var_edit_add_address_site.getText().toString().trim(),
-                                    null,
-                                    var_edit_add_resume_site.getText().toString().trim()
-                            )
-                    );
-                }
-                else {
-                    daoSite.addSite(AddSitesActivity.this,
-                            new Site(
-                                    var_edit_add_name_site.getText().toString().trim(),
-                                    var_float_latitude,
-                                    var_float_longitude,
-                                    var_edit_add_address_site.getText().toString().trim(),
-                                    var_spinner_add_category_site.getSelectedItem().toString(),
-                                    var_edit_add_resume_site.getText().toString().trim()
-                            )
-                    );
-                }
-            }
-        });
+        ecouteurConfirmationAjoutSite = new EcouteurConfirmationAjoutSite(this);
+        var_btn_confirmation_add_site.setOnClickListener(ecouteurConfirmationAjoutSite);
     }
 
     void getIntentData() {

@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOCategorie;
 import com.example.sortirametz.dao.DAOSite;
+import com.example.sortirametz.ecouteurs.EcouteurConfirmationSuppressionSite;
 import com.example.sortirametz.modeles.Categorie;
 import com.example.sortirametz.modeles.Site;
 
@@ -27,6 +28,8 @@ public class UpdateSitesActivity extends AppCompatActivity {
     Spinner var_spinner_update_category_site;
 
     String site_id, site_name, site_latitude, site_longitude, site_address, site_category, site_resume;
+
+    EcouteurConfirmationSuppressionSite ecouteurConfirmationSuppressionSite;
 
     DAOSite daoSite = new DAOSite();
     DAOCategorie daoCategorie = new DAOCategorie();
@@ -50,6 +53,7 @@ public class UpdateSitesActivity extends AppCompatActivity {
 
         listCategories = daoCategorie.getAllCategories(this);
         ArrayList<String> listOptions = new ArrayList<String>();
+        listOptions.add("None");
         for (int i = 0; i < listCategories.size(); i++) {
             listOptions.add(listCategories.get(i).getName());
         }
@@ -74,12 +78,8 @@ public class UpdateSitesActivity extends AppCompatActivity {
             }
         });*/
 
-        var_btn_confirmation_delete_site.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                confirmDialog();
-            }
-        });
+        ecouteurConfirmationSuppressionSite = new EcouteurConfirmationSuppressionSite(this);
+        var_btn_confirmation_delete_site.setOnClickListener(ecouteurConfirmationSuppressionSite);
     }
 
     void getIntentData(){
@@ -107,7 +107,7 @@ public class UpdateSitesActivity extends AppCompatActivity {
         }
     }
 
-    void confirmDialog(){
+    public void confirmDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Delete "+ site_name + " ?");
         builder.setMessage("Are you sure you want to delete "+ site_name + " ?");

@@ -13,7 +13,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOSite;
+import com.example.sortirametz.ecouteurs.EcouteurNavigationSitePositionActuelle;
 import com.example.sortirametz.modeles.Site;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -33,12 +37,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.sortirametz.databinding.ActivityMapsBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -48,13 +55,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityMapsBinding binding;
     private static final int ACCESS_LOCATION_REQUEST_CODE = 10001;
 
-    double distance_radius = 500;
-
+    String category = "All";
+    double distance_radius = 50;
+    FloatingActionButton var_button_add_site_currentlocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
     Task<Location> locationTask;
 
+    CircleOptions circleOpt = new CircleOptions();
+
     public DAOSite daoSite = new DAOSite();
     //ArrayList<Site> listSites = daoSite.getAllSites(this);
+
+    EcouteurNavigationSitePositionActuelle ecouteurNavigationSitePositionActuelle;
+
+    public double latitudeActuelle;
+    public double longitudeActuelle;
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +86,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        var_button_add_site_currentlocation = findViewById(R.id.button_add_site_currentlocation);
+
+        ecouteurNavigationSitePositionActuelle = new EcouteurNavigationSitePositionActuelle(this);
+        var_button_add_site_currentlocation.setOnClickListener(ecouteurNavigationSitePositionActuelle);
+
 
         //fusedLocationProviderClient_old = LocationServices.getFusedLocationProviderClient(this.getApplicationContext());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -105,18 +134,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         putMarkerInDistance();
-        CircleOptions circleOpt = new CircleOptions();
-        circleOpt.radius(100000);
-        circleOpt.strokeColor(Color.GRAY);
-        circleOpt.fillColor(Color.GRAY);
+
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                circleOpt.center(latLng);
-                mMap.addCircle(circleOpt);
-                Toast.makeText(MapsActivity.this, Double.toString(distance_radius), Toast.LENGTH_SHORT).show();
+                mMap.clear();
+                putCircle(latLng.latitude, latLng.longitude);
+                putMarkerInDistance(latLng);
             }
         });
+
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(@NonNull LatLng latLng) {
@@ -140,8 +167,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                //latLngLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLastLocation, 18));
+                mMap.clear();
+                latitudeActuelle = location.getLatitude();
+                longitudeActuelle = location.getLongitude();
+                putCircle(location.getLatitude(), location.getLongitude());
+                putMarkerInDistance();
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 18));
             }
         });
     }
@@ -160,20 +191,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    public void putCircle(double latitude, double longitude){
+        circleOpt.radius(distance_radius);
+        circleOpt.strokeColor(Color.GRAY);
+        circleOpt.fillColor(0x22000000);
+        circleOpt.center(new LatLng(latitude, longitude));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(bitmapDescriptorFromVector(this, R.drawable.ic_baseline_where_to_vote_24)));
+        circleOpt.strokeWidth(10);
+        mMap.addCircle(circleOpt);
+        Toast.makeText(MapsActivity.this, category, Toast.LENGTH_SHORT).show();
+    }
+
     public void putMarkerInDistance(){
         ArrayList<Site> listSites = daoSite.getAllSites(this);
         locationTask = fusedLocationProviderClient.getLastLocation();
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                LatLng latLngLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                putCircle(location.getLatitude(), location.getLongitude());
                 for (int i = 0; i < listSites.size(); i++) {
                     float[] distance = new float[1];
                     Location.distanceBetween(listSites.get(i).getLatitude(), listSites.get(i).getLongitude(), location.getLatitude(), location.getLongitude(), distance);
-                    System.out.println(distance[0]);
-                    if(distance_radius>=distance[0]) {
-                        LatLng site_positions = new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(site_positions).title(listSites.get(i).getName() + " - " + listSites.get(i).getResume() + " - " + distance[0]));
+                    if(distance_radius>=distance[0] && (listSites.get(i).getCategorie() == category || category == "All")) {
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude())).title(listSites.get(i).getName() + " - " + listSites.get(i).getResume() + " - " + (int)distance[0] + " meters"));
                     }
                 }
             }
@@ -181,11 +221,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    public void putMarkerInDistance(LatLng latLng){
+        ArrayList<Site> listSites = daoSite.getAllSites(this);
+        for (int i = 0; i < listSites.size(); i++) {
+            float[] distance = new float[1];
+            Location.distanceBetween(listSites.get(i).getLatitude(), listSites.get(i).getLongitude(), latLng.latitude, latLng.longitude, distance);
+            if(distance_radius>=distance[0] && (listSites.get(i).getCategorie() == category || category == "All")) {
+                mMap.addMarker(new MarkerOptions().position(new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude())).title(listSites.get(i).getName() + " - " + listSites.get(i).getResume() + " - " + (int)distance[0] + " meters"));
+            }
+        }
+    }
+
     public void putAllMarker(){
         ArrayList<Site> listSites = daoSite.getAllSites(this);
         for (int i = 0; i < listSites.size(); i++) {
             LatLng site_positions = new LatLng(listSites.get(i).getLatitude(),listSites.get(i).getLongitude());
-
             mMap.addMarker(new MarkerOptions().position(site_positions).title(listSites.get(i).getName()+" - "+listSites.get(i).getResume()));
         }
     }
@@ -203,6 +253,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 3){
+            category = data.getStringExtra("map_category");
             distance_radius = Double.parseDouble(data.getStringExtra("map_radius"));
         }
     }

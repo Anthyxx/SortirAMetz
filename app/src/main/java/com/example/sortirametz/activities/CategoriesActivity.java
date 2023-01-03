@@ -14,6 +14,7 @@ import com.example.sortirametz.R;
 import com.example.sortirametz.bdd.DatabaseHelper;
 import com.example.sortirametz.customadaptater.CustomAdaptaterCategories;
 import com.example.sortirametz.dao.DAOCategorie;
+import com.example.sortirametz.ecouteurs.EcouteurNavigationAjoutCategorie;
 import com.example.sortirametz.modeles.Categorie;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -26,6 +27,8 @@ public class CategoriesActivity extends AppCompatActivity {
     ContentResolver contentResolver;
     FloatingActionButton var_btn_add_category;
 
+    EcouteurNavigationAjoutCategorie ecouteurNavigationAjoutCategorie;
+
     DAOCategorie dao_categorie = new DAOCategorie();
 
     @Override
@@ -37,13 +40,8 @@ public class CategoriesActivity extends AppCompatActivity {
 
         this.contentResolver = this.getContentResolver();
 
-        var_btn_add_category.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(CategoriesActivity.this, AddCategoriesActivity.class);
-                startActivity(intent);
-            }
-        });
+        ecouteurNavigationAjoutCategorie = new EcouteurNavigationAjoutCategorie(this);
+        var_btn_add_category.setOnClickListener(ecouteurNavigationAjoutCategorie);
 
         db = new DatabaseHelper(CategoriesActivity.this);
 

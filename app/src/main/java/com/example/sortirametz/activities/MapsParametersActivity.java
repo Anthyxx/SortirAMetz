@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOCategorie;
 import com.example.sortirametz.dao.DAOSite;
+import com.example.sortirametz.ecouteurs.EcouteurMajParametres;
 import com.example.sortirametz.modeles.Categorie;
 import com.example.sortirametz.modeles.Site;
 import com.google.android.gms.maps.model.LatLng;
@@ -23,11 +24,13 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MapsParametersActivity extends AppCompatActivity {
-    EditText var_edit_maps_parameters_radius;
-    Button var_btn_confirmation_update_parameters;
-    Spinner var_spinner_categories_parameters;
+    public EditText var_edit_maps_parameters_radius;
+    public Button var_btn_confirmation_update_parameters;
+    public Spinner var_spinner_categories_parameters;
 
     public DAOCategorie daoCategorie = new DAOCategorie();
+
+    EcouteurMajParametres ecouteurMajParametres;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,21 +47,14 @@ public class MapsParametersActivity extends AppCompatActivity {
 
         ArrayList<Categorie> listCategories = daoCategorie.getAllCategories(this);
         ArrayList<String> listOptions = new ArrayList<String>();
+        listOptions.add("All");
         for (int i = 0; i < listCategories.size(); i++) {
             listOptions.add(listCategories.get(i).getName());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_list, listOptions);
         var_spinner_categories_parameters.setAdapter(adapter); // this will set list of values to spinner
 
-
-        var_btn_confirmation_update_parameters.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent intent = new Intent(MapsParametersActivity.this, MapsActivity.class);
-                intent.putExtra("map_category", var_edit_maps_parameters_radius.getText().toString().trim());
-                intent.putExtra("map_radius", var_edit_maps_parameters_radius.getText().toString().trim());
-                setResult(3, intent);
-                finish();
-            }
-        });
+        ecouteurMajParametres = new EcouteurMajParametres(this);
+        var_btn_confirmation_update_parameters.setOnClickListener(ecouteurMajParametres);
     }
 }

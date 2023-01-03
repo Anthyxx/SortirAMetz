@@ -11,14 +11,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOCategorie;
+import com.example.sortirametz.ecouteurs.EcouteurConfirmationAjoutCategorie;
+import com.example.sortirametz.ecouteurs.EcouteurConfirmationAjoutSite;
 import com.example.sortirametz.modeles.Categorie;
 
 public class AddCategoriesActivity extends AppCompatActivity {
-    TextView var_txt_add_category_category;
-    EditText var_edit_add_category_category;
-    Button var_btn_confirmation_add_category;
+    public TextView var_txt_add_category_category;
+    public EditText var_edit_add_category_category;
+    public Button var_btn_confirmation_add_category;
 
-    DAOCategorie daoCategorie = new DAOCategorie();
+    EcouteurConfirmationAjoutCategorie ecouteurConfirmationAjoutCategorie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +31,7 @@ public class AddCategoriesActivity extends AppCompatActivity {
         var_edit_add_category_category = findViewById(R.id.edit_add_category_category);
         var_btn_confirmation_add_category = findViewById(R.id.btn_confirmation_add_category);
 
-        var_btn_confirmation_add_category.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
-                daoCategorie.addCategory(AddCategoriesActivity.this,
-                        new Categorie(
-                                var_edit_add_category_category.getText().toString().trim()
-                        )
-                );
-            }
-        });
+        ecouteurConfirmationAjoutCategorie = new EcouteurConfirmationAjoutCategorie(this);
+        var_btn_confirmation_add_category.setOnClickListener(ecouteurConfirmationAjoutCategorie);
     }
 }
