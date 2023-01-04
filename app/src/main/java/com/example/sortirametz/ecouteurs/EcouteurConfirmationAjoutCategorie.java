@@ -3,7 +3,6 @@ package com.example.sortirametz.ecouteurs;
 import android.view.View;
 
 import com.example.sortirametz.activities.AddCategoriesActivity;
-import com.example.sortirametz.activities.AddSitesActivity;
 import com.example.sortirametz.dao.DAOCategorie;
 import com.example.sortirametz.modeles.Categorie;
 
@@ -24,5 +23,6 @@ public class EcouteurConfirmationAjoutCategorie implements View.OnClickListener 
                         activity.var_edit_add_category_category.getText().toString().trim()
                 )
         );
+        activity.finish();
     }
 }

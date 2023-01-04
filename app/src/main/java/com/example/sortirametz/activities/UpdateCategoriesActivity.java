@@ -16,21 +16,25 @@ import com.example.sortirametz.dao.DAOCategorie;
 import com.example.sortirametz.dao.DAOSite;
 import com.example.sortirametz.ecouteurs.EcouteurConfirmationSuppressionCategorie;
 import com.example.sortirametz.ecouteurs.EcouteurConfirmationSuppressionSite;
+import com.example.sortirametz.ecouteurs.EcouteurConfirmationUpdateCategory;
 import com.example.sortirametz.modeles.Categorie;
 import com.example.sortirametz.modeles.Site;
 
 import java.util.ArrayList;
 
 public class UpdateCategoriesActivity extends AppCompatActivity {
-    EditText var_edit_update_name_category;
+    public EditText var_edit_update_name_category;
     Button var_btn_confirmation_update_category, var_btn_confirmation_delete_category;
 
     String category_id, category_name;
 
-    EcouteurConfirmationSuppressionCategorie ecouteurConfirmationSuppressionCategorie;
+    public Categorie categorie;
 
-    DAOSite daoSite = new DAOSite();
-    DAOCategorie daoCategorie = new DAOCategorie();
+    EcouteurConfirmationSuppressionCategorie ecouteurConfirmationSuppressionCategorie;
+    EcouteurConfirmationUpdateCategory ecouteurConfirmationUpdateCategory;
+
+    public DAOSite daoSite = new DAOSite();
+    public DAOCategorie daoCategorie = new DAOCategorie();
 
 
     @Override
@@ -49,20 +53,12 @@ public class UpdateCategoriesActivity extends AppCompatActivity {
         if(ab != null){
             ab.setTitle(category_name);
         }
-/*
-        update_button.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                DatabaseHelper myDB = new DatabaseHelper(UpdateActivity.this);
-                title=title_input.getText().toString().trim();
-                author=author_input.getText().toString().trim();
-                pages=pages_input.getText().toString().trim();
-                myDB.updateData(id, title, author, pages);
-            }
-        });*/
 
         ecouteurConfirmationSuppressionCategorie = new EcouteurConfirmationSuppressionCategorie(this);
+        ecouteurConfirmationUpdateCategory = new EcouteurConfirmationUpdateCategory(this);
+
         var_btn_confirmation_delete_category.setOnClickListener(ecouteurConfirmationSuppressionCategorie);
+        var_btn_confirmation_update_category.setOnClickListener(ecouteurConfirmationUpdateCategory);
     }
 
     void getIntentData(){
@@ -70,6 +66,8 @@ public class UpdateCategoriesActivity extends AppCompatActivity {
             category_id = getIntent().getStringExtra("category_id");
             category_name = getIntent().getStringExtra("category_name");
             var_edit_update_name_category.setText(category_name);
+
+            categorie = new Categorie(Integer.parseInt(category_id), category_name);
         }
         else{
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();

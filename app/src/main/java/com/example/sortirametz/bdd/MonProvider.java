@@ -58,6 +58,9 @@ public class MonProvider extends android.content.ContentProvider{
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+        SQLiteDatabase bd;
+        bd = this.helper.getWritableDatabase();
+        String nomTable = uri.getPath().substring(1);
+        return bd.update(nomTable, contentValues, s, strings);
     }
 }

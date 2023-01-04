@@ -45,23 +45,20 @@
         </activity>
         <activity
             android:name=".activities.SitesActivity"
-            android:exported="true"
-            android:parentActivityName=".activities.MapsActivity">
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".activities.AddSitesActivity"
-            android:exported="true"
-            android:parentActivityName=".activities.SitesActivity">
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".activities.UpdateSitesActivity"
-            android:parentActivityName=".activities.SitesActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -69,23 +66,20 @@
         </activity>
         <activity
             android:name=".activities.CategoriesActivity"
-            android:exported="true"
-            android:parentActivityName=".activities.MapsActivity">
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".activities.AddCategoriesActivity"
-            android:exported="true"
-            android:parentActivityName=".activities.CategoriesActivity">
+            android:exported="true">
         <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".activities.UpdateCategoriesActivity"
-            android:parentActivityName=".activities.CategoriesActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -93,7 +87,6 @@
         </activity>
         <activity
             android:name=".activities.MapsParametersActivity"
-            android:parentActivityName=".activities.MapsActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

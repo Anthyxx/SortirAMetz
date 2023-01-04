@@ -17,21 +17,29 @@ import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOCategorie;
 import com.example.sortirametz.dao.DAOSite;
 import com.example.sortirametz.ecouteurs.EcouteurConfirmationSuppressionSite;
+import com.example.sortirametz.ecouteurs.EcouteurConfirmationUpdateSite;
 import com.example.sortirametz.modeles.Categorie;
 import com.example.sortirametz.modeles.Site;
 
 import java.util.ArrayList;
 
 public class UpdateSitesActivity extends AppCompatActivity {
-    EditText var_edit_update_name_site, var_edit_update_latitude_site, var_edit_update_longitude_site, var_edit_update_address_site, var_edit_update_resume_site;
+    public EditText var_edit_update_name_site;
+    public EditText var_edit_update_latitude_site;
+    public EditText var_edit_update_longitude_site;
+    public EditText var_edit_update_address_site;
+    public EditText var_edit_update_resume_site;
     Button var_btn_confirmation_update_site, var_btn_confirmation_delete_site;
-    Spinner var_spinner_update_category_site;
+    public Spinner var_spinner_update_category_site;
 
     String site_id, site_name, site_latitude, site_longitude, site_address, site_category, site_resume;
 
-    EcouteurConfirmationSuppressionSite ecouteurConfirmationSuppressionSite;
+    public Site site;
 
-    DAOSite daoSite = new DAOSite();
+    EcouteurConfirmationSuppressionSite ecouteurConfirmationSuppressionSite;
+    EcouteurConfirmationUpdateSite ecouteurConfirmationUpdateSite;
+
+    public DAOSite daoSite = new DAOSite();
     DAOCategorie daoCategorie = new DAOCategorie();
 
     ArrayList<Categorie> listCategories;
@@ -66,20 +74,12 @@ public class UpdateSitesActivity extends AppCompatActivity {
         if(ab != null){
             ab.setTitle(site_name);
         }
-        /*
-        update_button.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                DatabaseHelper myDB = new DatabaseHelper(UpdateActivity.this);
-                title=title_input.getText().toString().trim();
-                author=author_input.getText().toString().trim();
-                pages=pages_input.getText().toString().trim();
-                myDB.updateData(id, title, author, pages);
-            }
-        });*/
 
         ecouteurConfirmationSuppressionSite = new EcouteurConfirmationSuppressionSite(this);
+        ecouteurConfirmationUpdateSite = new EcouteurConfirmationUpdateSite(this);
+
         var_btn_confirmation_delete_site.setOnClickListener(ecouteurConfirmationSuppressionSite);
+        var_btn_confirmation_update_site.setOnClickListener(ecouteurConfirmationUpdateSite);
     }
 
     void getIntentData(){
@@ -98,9 +98,11 @@ public class UpdateSitesActivity extends AppCompatActivity {
             var_edit_update_latitude_site.setText(site_latitude);
             var_edit_update_longitude_site.setText(site_longitude);
             var_edit_update_address_site.setText(site_address);
-            var_spinner_update_category_site.setSelection(daoCategorie.getCategoryByString(listCategories, site_category).getId());
-            System.out.println("Catégorie = "+daoCategorie.getCategoryByString(listCategories, site_category).getName());
+            System.out.println("indice = "+daoCategorie.getCategoryByString(listCategories, site_category));
+            var_spinner_update_category_site.setSelection(daoCategorie.getCategoryByString(listCategories, site_category));
             var_edit_update_resume_site.setText(site_resume);
+
+            site = new Site(Integer.parseInt(site_id), site_name, Double.parseDouble(site_latitude), Double.parseDouble(site_longitude), site_address, site_category, site_resume);
         }
         else{
             Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show();

@@ -7,8 +7,10 @@ import android.database.Cursor;
 
 import com.example.sortirametz.bdd.ContractClass;
 import com.example.sortirametz.modeles.Categorie;
+import com.example.sortirametz.modeles.Site;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class DAOCategorie {
 
@@ -28,17 +30,16 @@ public class DAOCategorie {
         return listCategories;
     }
 
-    public Categorie getCategoryByString(ArrayList<Categorie> list, String category_name){
+    public int getCategoryByString(ArrayList<Categorie> list, String category_name){
+        int position = 0;
         for (int i = 0; i < list.size(); i++) {
             System.out.println("getname = "+list.get(i).getName());
             System.out.println("chaine = "+category_name);
-            if(list.get(i).getName() == category_name){
-                System.out.println("IF");
-                return list.get(i);
+            if(Objects.equals(list.get(i).getName(), category_name)){
+                position = i+1;
             }
         }
-        System.out.println("NULL");
-        return new Categorie();
+        return position;
     }
 
     public void addCategory(Activity activity, Categorie categorie){
@@ -48,6 +49,15 @@ public class DAOCategorie {
         cv.put(ContractClass.Categorie.category_name, categorie.getName());
 
         contentResolver.insert(ContractClass.Categorie.CONTENT_URI,cv);
+    }
+
+    public void updateCategory(Activity activity, Categorie categorie){
+        ContentResolver contentResolver = activity.getContentResolver();
+        ContentValues cv = new ContentValues();
+
+        cv.put(ContractClass.Categorie.category_name, categorie.getName());
+
+        contentResolver.update(ContractClass.Categorie.CONTENT_URI, cv ,"id=?", new String[]{Integer.toString(categorie.getId())});
     }
 
     public void deleteCategory(Activity activity, String id){//SitesListActivity, int id

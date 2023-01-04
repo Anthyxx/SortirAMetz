@@ -46,6 +46,6 @@ public class EcouteurConfirmationAjoutSite implements View.OnClickListener {
                     )
             );
         }
-
+        activity.finish();
     }
 }

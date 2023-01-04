@@ -51,6 +51,20 @@ public class DAOSite {
         contentResolver.insert(ContractClass.Site.CONTENT_URI,cv);
     }
 
+    public void updateSite(Activity activity, Site site){
+        ContentResolver contentResolver = activity.getContentResolver();
+        ContentValues cv = new ContentValues();
+
+        cv.put(ContractClass.Site.site_name, site.getName());
+        cv.put(ContractClass.Site.latitude, site.getLatitude());
+        cv.put(ContractClass.Site.longitude, site.getLongitude());
+        cv.put(ContractClass.Site.adresse_postale, site.getAdresse());
+        cv.put(ContractClass.Site.site_category_name, site.getCategorie());
+        cv.put(ContractClass.Site.resume, site.getResume());
+
+        contentResolver.update(ContractClass.Site.CONTENT_URI, cv ,"id=?", new String[]{Integer.toString(site.getId())});
+    }
+
     public void deleteSite(Activity activity, String id){//SitesListActivity, int id
         ContentResolver contentResolver = activity.getContentResolver();
         String[] selectionArgs = new String[]{String.valueOf(id)};

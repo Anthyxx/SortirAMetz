@@ -114,14 +114,18 @@
         app:layout_constraintBottom_toTopOf="@+id/edit_add_resume_site"
         app:layout_constraintStart_toStartOf="@+id/edit_add_resume_site" />
 
+
     <EditText
         android:id="@+id/edit_add_resume_site"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:ems="10"
-        android:hint="Resume"
-        android:inputType="textPersonName"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        android:lines="5"
+        android:minLines="1"
+        android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"

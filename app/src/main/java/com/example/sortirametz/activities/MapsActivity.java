@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOSite;
 import com.example.sortirametz.ecouteurs.EcouteurNavigationSitePositionActuelle;
+import com.example.sortirametz.ecouteurs.EcouteurRefreshMap;
 import com.example.sortirametz.modeles.Site;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -48,6 +49,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -57,7 +59,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     String category = "All";
     double distance_radius = 50;
-    FloatingActionButton var_button_add_site_currentlocation;
+    FloatingActionButton var_button_add_site_currentlocation, var_button_refresh;
     private FusedLocationProviderClient fusedLocationProviderClient;
     Task<Location> locationTask;
 
@@ -67,6 +69,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     //ArrayList<Site> listSites = daoSite.getAllSites(this);
 
     EcouteurNavigationSitePositionActuelle ecouteurNavigationSitePositionActuelle;
+    EcouteurRefreshMap ecouteurRefreshMap;
 
     public double latitudeActuelle;
     public double longitudeActuelle;
@@ -87,9 +90,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         var_button_add_site_currentlocation = findViewById(R.id.button_add_site_currentlocation);
+        var_button_refresh = findViewById(R.id.button_refresh);
 
         ecouteurNavigationSitePositionActuelle = new EcouteurNavigationSitePositionActuelle(this);
         var_button_add_site_currentlocation.setOnClickListener(ecouteurNavigationSitePositionActuelle);
+
+        ecouteurRefreshMap = new EcouteurRefreshMap(this);
+        var_button_refresh.setOnClickListener(ecouteurRefreshMap);
 
 
         //fusedLocationProviderClient_old = LocationServices.getFusedLocationProviderClient(this.getApplicationContext());
@@ -162,7 +169,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private void zoomToUserLocation(){
+    public void zoomToUserLocation(){
         locationTask = fusedLocationProviderClient.getLastLocation();
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
@@ -199,7 +206,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(bitmapDescriptorFromVector(this, R.drawable.ic_baseline_where_to_vote_24)));
         circleOpt.strokeWidth(10);
         mMap.addCircle(circleOpt);
-        Toast.makeText(MapsActivity.this, category, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MapsActivity.this, category, Toast.LENGTH_SHORT).show();
     }
 
     public void putMarkerInDistance(){
@@ -212,8 +219,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 for (int i = 0; i < listSites.size(); i++) {
                     float[] distance = new float[1];
                     Location.distanceBetween(listSites.get(i).getLatitude(), listSites.get(i).getLongitude(), location.getLatitude(), location.getLongitude(), distance);
-                    if(distance_radius>=distance[0] && (listSites.get(i).getCategorie() == category || category == "All")) {
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude())).title(listSites.get(i).getName() + " - " + listSites.get(i).getResume() + " - " + (int)distance[0] + " meters"));
+                    if(distance_radius>=distance[0] && (Objects.equals(listSites.get(i).getCategorie(), category) || Objects.equals(category, "All"))) {
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude())).title(listSites.get(i).getName() + " (at " + (int)distance[0] + " meters)").snippet(listSites.get(i).getResume()));
                     }
                 }
             }
@@ -226,8 +233,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (int i = 0; i < listSites.size(); i++) {
             float[] distance = new float[1];
             Location.distanceBetween(listSites.get(i).getLatitude(), listSites.get(i).getLongitude(), latLng.latitude, latLng.longitude, distance);
-            if(distance_radius>=distance[0] && (listSites.get(i).getCategorie() == category || category == "All")) {
-                mMap.addMarker(new MarkerOptions().position(new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude())).title(listSites.get(i).getName() + " - " + listSites.get(i).getResume() + " - " + (int)distance[0] + " meters"));
+            if(distance_radius>=distance[0] && (Objects.equals(listSites.get(i).getCategorie(), category) || Objects.equals(category, "All"))) {
+                mMap.addMarker(new MarkerOptions().position(new LatLng(listSites.get(i).getLatitude(), listSites.get(i).getLongitude())).title(listSites.get(i).getName() + " (at " + (int)distance[0] + " meters)").snippet(listSites.get(i).getResume()));
             }
         }
     }
@@ -263,6 +270,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         switch (item.getItemId()){
             case R.id.button_menu_parameters:
                 Intent intent_parameters = new Intent(MapsActivity.this, MapsParametersActivity.class);
+                intent_parameters.putExtra("category", category);
                 intent_parameters.putExtra("radius", Double.toString(distance_radius));
                 startActivityForResult(intent_parameters, 3);
                 break;

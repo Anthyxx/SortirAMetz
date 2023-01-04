@@ -41,7 +41,7 @@ public class MapsParametersActivity extends AppCompatActivity {
         var_edit_maps_parameters_radius = findViewById(R.id.edit_maps_parameters_radius);
         var_btn_confirmation_update_parameters = findViewById(R.id.btn_confirmation_update_parameters);
 
-        var_edit_maps_parameters_radius.setText(getIntent().getStringExtra("radius"));
+
 
 
 
@@ -53,6 +53,11 @@ public class MapsParametersActivity extends AppCompatActivity {
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_list, listOptions);
         var_spinner_categories_parameters.setAdapter(adapter); // this will set list of values to spinner
+
+        String category = getIntent().getStringExtra("category");
+
+        var_spinner_categories_parameters.setSelection(daoCategorie.getCategoryByString(listCategories, category));
+        var_edit_maps_parameters_radius.setText(getIntent().getStringExtra("radius"));
 
         ecouteurMajParametres = new EcouteurMajParametres(this);
         var_btn_confirmation_update_parameters.setOnClickListener(ecouteurMajParametres);
