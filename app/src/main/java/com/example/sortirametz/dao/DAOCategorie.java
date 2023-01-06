@@ -33,8 +33,6 @@ public class DAOCategorie {
     public int getCategoryByString(ArrayList<Categorie> list, String category_name){
         int position = 0;
         for (int i = 0; i < list.size(); i++) {
-            System.out.println("getname = "+list.get(i).getName());
-            System.out.println("chaine = "+category_name);
             if(Objects.equals(list.get(i).getName(), category_name)){
                 position = i+1;
             }
@@ -51,18 +49,25 @@ public class DAOCategorie {
         contentResolver.insert(ContractClass.Categorie.CONTENT_URI,cv);
     }
 
-    public void updateCategory(Activity activity, Categorie categorie){
+    public void updateCategory(Activity activity, Categorie categorie, String oldCategory){
         ContentResolver contentResolver = activity.getContentResolver();
         ContentValues cv = new ContentValues();
 
         cv.put(ContractClass.Categorie.category_name, categorie.getName());
 
         contentResolver.update(ContractClass.Categorie.CONTENT_URI, cv ,"id=?", new String[]{Integer.toString(categorie.getId())});
+
+        DAOSite daoSite = new DAOSite();
+        daoSite.updateCategoryFromSite(activity, categorie, oldCategory);
     }
 
-    public void deleteCategory(Activity activity, String id){//SitesListActivity, int id
+    public void deleteCategory(Activity activity, Categorie categorie, String id){//SitesListActivity, int id
         ContentResolver contentResolver = activity.getContentResolver();
         String[] selectionArgs = new String[]{String.valueOf(id)};
+
         contentResolver.delete(ContractClass.Categorie.CONTENT_URI, "id = ?", selectionArgs);
+
+        DAOSite daoSite = new DAOSite();
+        daoSite.deleteCategoryFromSite(activity,categorie);
     }
 }

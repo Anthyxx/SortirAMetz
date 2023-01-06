@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.widget.Toast;
 
 import com.example.sortirametz.bdd.ContractClass;
 import com.example.sortirametz.modeles.Categorie;
@@ -69,5 +70,24 @@ public class DAOSite {
         ContentResolver contentResolver = activity.getContentResolver();
         String[] selectionArgs = new String[]{String.valueOf(id)};
         contentResolver.delete(ContractClass.Site.CONTENT_URI, "id = ?", selectionArgs);
+    }
+
+    public void deleteCategoryFromSite(Activity activity, Categorie category){
+        ContentResolver contentResolver = activity.getContentResolver();
+        ContentValues cv = new ContentValues();
+
+        cv.put(ContractClass.Site.site_category_name, "No Category");
+
+        contentResolver.update(ContractClass.Site.CONTENT_URI, cv, "site_category_name = ?", new String[]{String.valueOf(category.getName())});
+    }
+
+    public void updateCategoryFromSite(Activity activity, Categorie category, String oldCategory){
+        ContentResolver contentResolver = activity.getContentResolver();
+        ContentValues cv = new ContentValues();
+
+        cv.put(ContractClass.Site.site_category_name, category.getName());
+
+        contentResolver.update(ContractClass.Site.CONTENT_URI, cv, "site_category_name = ?", new String[]{String.valueOf(oldCategory)});
+        System.out.println("AAAAAAAAAAAAAAAAA"+category.getName() + ", " + oldCategory);
     }
 }

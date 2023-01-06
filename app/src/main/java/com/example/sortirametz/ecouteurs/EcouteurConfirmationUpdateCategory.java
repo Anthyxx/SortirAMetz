@@ -15,8 +15,14 @@ public class EcouteurConfirmationUpdateCategory implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
-        activity.categorie.setName(activity.var_edit_update_name_category.getText().toString().trim());
-        activity.daoCategorie.updateCategory(activity, activity.categorie);
-        activity.finish();
+        String oldNameCategory = activity.categorie.getName();
+        if(activity.var_edit_update_name_category.getText().toString().trim().matches("[a-zA-Z0-9]")){
+            activity.categorie.setName(activity.var_edit_update_name_category.getText().toString().trim());
+            activity.daoCategorie.updateCategory(activity, activity.categorie, oldNameCategory);
+            activity.finish();
+        }
+        else{
+
+        }
     }
 }

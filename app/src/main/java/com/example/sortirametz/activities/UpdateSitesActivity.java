@@ -98,7 +98,7 @@ public class UpdateSitesActivity extends AppCompatActivity {
             var_edit_update_latitude_site.setText(site_latitude);
             var_edit_update_longitude_site.setText(site_longitude);
             var_edit_update_address_site.setText(site_address);
-            System.out.println("indice = "+daoCategorie.getCategoryByString(listCategories, site_category));
+            //System.out.println("indice = "+daoCategorie.getCategoryByString(listCategories, site_category));
             var_spinner_update_category_site.setSelection(daoCategorie.getCategoryByString(listCategories, site_category));
             var_edit_update_resume_site.setText(site_resume);
 

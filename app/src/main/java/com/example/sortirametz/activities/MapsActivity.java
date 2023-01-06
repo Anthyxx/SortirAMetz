@@ -5,34 +5,34 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOSite;
+import com.example.sortirametz.ecouteurs.EcouteurAfficheAllSites;
 import com.example.sortirametz.ecouteurs.EcouteurNavigationSitePositionActuelle;
 import com.example.sortirametz.ecouteurs.EcouteurRefreshMap;
 import com.example.sortirametz.modeles.Site;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -42,6 +42,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.sortirametz.databinding.ActivityMapsBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,13 +54,13 @@ import java.util.Objects;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    public GoogleMap mMap;
     private ActivityMapsBinding binding;
     private static final int ACCESS_LOCATION_REQUEST_CODE = 10001;
 
     String category = "All";
     double distance_radius = 50;
-    FloatingActionButton var_button_add_site_currentlocation, var_button_refresh;
+    FloatingActionButton var_button_show_all_sites, var_button_add_site_currentlocation, var_button_refresh;
     private FusedLocationProviderClient fusedLocationProviderClient;
     Task<Location> locationTask;
 
@@ -68,6 +69,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public DAOSite daoSite = new DAOSite();
     //ArrayList<Site> listSites = daoSite.getAllSites(this);
 
+    EcouteurAfficheAllSites ecouteurAfficheAllSites;
     EcouteurNavigationSitePositionActuelle ecouteurNavigationSitePositionActuelle;
     EcouteurRefreshMap ecouteurRefreshMap;
 
@@ -89,8 +91,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        var_button_show_all_sites = findViewById(R.id.button_show_all_sites);
         var_button_add_site_currentlocation = findViewById(R.id.button_add_site_currentlocation);
         var_button_refresh = findViewById(R.id.button_refresh);
+
+        ecouteurAfficheAllSites = new EcouteurAfficheAllSites(this);
+        var_button_show_all_sites.setOnClickListener(ecouteurAfficheAllSites);
 
         ecouteurNavigationSitePositionActuelle = new EcouteurNavigationSitePositionActuelle(this);
         var_button_add_site_currentlocation.setOnClickListener(ecouteurNavigationSitePositionActuelle);
@@ -120,6 +126,38 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            Context context = getApplicationContext();
+
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                LinearLayout info = new LinearLayout(MapsActivity.this);
+                info.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(MapsActivity.this);
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(MapsActivity.this);
+                snippet.setTextColor(Color.GRAY);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
+            }
+        });
+
         /*
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
@@ -271,7 +309,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.button_menu_parameters:
                 Intent intent_parameters = new Intent(MapsActivity.this, MapsParametersActivity.class);
                 intent_parameters.putExtra("category", category);
-                intent_parameters.putExtra("radius", Double.toString(distance_radius));
+                intent_parameters.putExtra("radius", Integer.toString((int)distance_radius));
                 startActivityForResult(intent_parameters, 3);
                 break;
             case R.id.button_menu_sites:

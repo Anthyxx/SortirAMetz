@@ -82,12 +82,7 @@ public class UpdateCategoriesActivity extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                for (int j = 0; j < listSites.size(); j++) {
-                    if(listSites.get(j).getCategorie() == category_name){
-                        listSites.get(j).setCategorie(null);
-                    }
-                }
-                daoCategorie.deleteCategory(UpdateCategoriesActivity.this, category_id);
+                daoCategorie.deleteCategory(UpdateCategoriesActivity.this, categorie, category_id);
                 finish();
             }
         });
