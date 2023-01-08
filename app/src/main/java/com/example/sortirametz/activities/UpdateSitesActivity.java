@@ -117,6 +117,7 @@ public class UpdateSitesActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 daoSite.deleteSite(UpdateSitesActivity.this, site_id);
+                Toast.makeText(UpdateSitesActivity.this, "Deleted Successfully", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

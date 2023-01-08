@@ -16,7 +16,7 @@ public class EcouteurMajParametres implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
-        if(activity.var_edit_maps_parameters_radius.getText().toString().trim().matches("[0-9]*")){
+        if(activity.var_edit_maps_parameters_radius.getText().toString().trim().matches("[0-9]+")){
             Intent intent = new Intent(activity , MapsActivity.class);
             intent.putExtra("map_category", activity.var_spinner_categories_parameters.getSelectedItem().toString().trim());
             intent.putExtra("map_radius", activity.var_edit_maps_parameters_radius.getText().toString().trim());
@@ -24,7 +24,7 @@ public class EcouteurMajParametres implements View.OnClickListener{
             activity.finish();
         }
         else{
-            Toast.makeText(activity, "Please insert only numbers for radius", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Radius: numbers only, at least 1", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -83,6 +83,7 @@ public class UpdateCategoriesActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 daoCategorie.deleteCategory(UpdateCategoriesActivity.this, categorie, category_id);
+                Toast.makeText(UpdateCategoriesActivity.this, "Deleted Successfully", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

@@ -16,6 +16,6 @@ public class EcouteurNavigationAjoutCategorie implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         Intent intent = new Intent(activity, AddCategoriesActivity.class);
-        activity.startActivity(intent);
+        activity.startActivityForResult(intent, 2);
     }
 }

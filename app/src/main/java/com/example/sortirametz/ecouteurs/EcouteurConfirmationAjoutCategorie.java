@@ -1,6 +1,7 @@
 package com.example.sortirametz.ecouteurs;
 
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.sortirametz.activities.AddCategoriesActivity;
 import com.example.sortirametz.dao.DAOCategorie;
@@ -18,11 +19,17 @@ public class EcouteurConfirmationAjoutCategorie implements View.OnClickListener 
 
     @Override
     public void onClick(View view) {
-        daoCategorie.addCategory(activity,
-                new Categorie(
-                        activity.var_edit_add_category_category.getText().toString().trim()
-                )
-        );
-        activity.finish();
+        if(activity.var_edit_add_category_category.getText().toString().trim().matches("[a-zA-Z0-9 ]*")){
+            daoCategorie.addCategory(activity,
+                    new Categorie(
+                            activity.var_edit_add_category_category.getText().toString().trim()
+                    )
+            );
+            Toast.makeText(activity, "Added Successfully", Toast.LENGTH_SHORT).show();
+            activity.finish();
+        }
+        else{
+            Toast.makeText(activity, "Name: letters, spaces & numbers only", Toast.LENGTH_SHORT).show();
+        }
     }
 }

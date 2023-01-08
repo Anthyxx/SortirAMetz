@@ -18,6 +18,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,10 +30,15 @@ import android.widget.TextView;
 import com.example.sortirametz.R;
 import com.example.sortirametz.dao.DAOSite;
 import com.example.sortirametz.ecouteurs.EcouteurAfficheAllSites;
+import com.example.sortirametz.ecouteurs.EcouteurMapClick;
+import com.example.sortirametz.ecouteurs.EcouteurMapLongClick;
 import com.example.sortirametz.ecouteurs.EcouteurNavigationSitePositionActuelle;
 import com.example.sortirametz.ecouteurs.EcouteurRefreshMap;
 import com.example.sortirametz.modeles.Site;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -63,6 +69,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     FloatingActionButton var_button_show_all_sites, var_button_add_site_currentlocation, var_button_refresh;
     private FusedLocationProviderClient fusedLocationProviderClient;
     Task<Location> locationTask;
+    LocationRequest locationRequest;
+
+    public boolean modeUserLocation;
+    public boolean modeAllSite;
+
+    public String modeAllSiteEnabled = "Mode \"All Sites\" enabled";
+    public String modeUserLocationEnabled = "Mode \"Sites around you\" enabled";
+    public String modeUserLocationNotEnabled = "Mode \"Sites around clic\" enabled";
 
     CircleOptions circleOpt = new CircleOptions();
 
@@ -72,6 +86,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     EcouteurAfficheAllSites ecouteurAfficheAllSites;
     EcouteurNavigationSitePositionActuelle ecouteurNavigationSitePositionActuelle;
     EcouteurRefreshMap ecouteurRefreshMap;
+    EcouteurMapClick ecouteurMapClick;
+    EcouteurMapLongClick ecouteurMapLongClick;
 
     public double latitudeActuelle;
     public double longitudeActuelle;
@@ -95,23 +111,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         var_button_add_site_currentlocation = findViewById(R.id.button_add_site_currentlocation);
         var_button_refresh = findViewById(R.id.button_refresh);
 
-        ecouteurAfficheAllSites = new EcouteurAfficheAllSites(this);
-        var_button_show_all_sites.setOnClickListener(ecouteurAfficheAllSites);
-
-        ecouteurNavigationSitePositionActuelle = new EcouteurNavigationSitePositionActuelle(this);
-        var_button_add_site_currentlocation.setOnClickListener(ecouteurNavigationSitePositionActuelle);
-
-        ecouteurRefreshMap = new EcouteurRefreshMap(this);
-        var_button_refresh.setOnClickListener(ecouteurRefreshMap);
-
-
-        //fusedLocationProviderClient_old = LocationServices.getFusedLocationProviderClient(this.getApplicationContext());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(500);
+        locationRequest.setFastestInterval(500);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        modeUserLocation = true;
+        modeAllSite = false;
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        startLocationUpdate();
     }
 
     /**
@@ -158,12 +171,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        /*
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        */
+        //buttons listeners
+        ecouteurAfficheAllSites = new EcouteurAfficheAllSites(this);
+        var_button_show_all_sites.setOnClickListener(ecouteurAfficheAllSites);
+
+        ecouteurNavigationSitePositionActuelle = new EcouteurNavigationSitePositionActuelle(this);
+        var_button_add_site_currentlocation.setOnClickListener(ecouteurNavigationSitePositionActuelle);
+
+        ecouteurRefreshMap = new EcouteurRefreshMap(this);
+        var_button_refresh.setOnClickListener(ecouteurRefreshMap);
+
+        ecouteurMapClick = new EcouteurMapClick(this);
+        mMap.setOnMapClickListener(ecouteurMapClick);
+
+        ecouteurMapLongClick = new EcouteurMapLongClick(this);
+        mMap.setOnMapLongClickListener(ecouteurMapLongClick);
+
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             enableUserLocation();
@@ -178,27 +201,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-        putMarkerInDistance();
+        if(modeUserLocation){
+            startLocationUpdate();
+        }
+        else{
+            stopLocationUpdate();
+            putMarkerInDistance();
+        }
+    }
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
+    LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            super.onLocationResult(locationResult);
+            if(modeUserLocation){
                 mMap.clear();
-                putCircle(latLng.latitude, latLng.longitude);
-                putMarkerInDistance(latLng);
+                putMarkerInDistance();
+                putCircle(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
             }
-        });
+        }
+    };
 
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(@NonNull LatLng latLng) {
-                Intent intent = new Intent(MapsActivity.this, AddSitesActivity.class);
-                intent.putExtra("click_latitude", String.valueOf(latLng.latitude));
-                intent.putExtra("click_longitude", String.valueOf(latLng.longitude));
-                startActivity(intent);
-            }
-        });
+    private void startLocationUpdate() {
+        if (modeUserLocation){
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }
+    }
 
+    private void stopLocationUpdate(){
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
     @SuppressLint("MissingPermission")
